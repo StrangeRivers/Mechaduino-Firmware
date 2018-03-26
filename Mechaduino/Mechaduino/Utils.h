@@ -21,10 +21,6 @@
 	void output(float theta, int effort);	  //calculates phase currents (commutation) and outputs to Vref pins
 
 	void calibrate();	                //calibration routine
-		
-	void serialUSBCheck();            //checks serial port for commands.  Must include this in loop() for serial interface to work
-
-  void serial1Check();              //checks serial port for commands.  Must include this in loop() for serial interface to work
 
 	void parameterQuery();            //Prints current parameters
 	

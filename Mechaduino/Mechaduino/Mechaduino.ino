@@ -45,6 +45,7 @@
 #include "Parameters.h"
 #include "State.h"
 #include "analogFastWrite.h"
+#include "Serial.h"
 
 //////////////////////////////////////
 /////////////////SETUP////////////////
