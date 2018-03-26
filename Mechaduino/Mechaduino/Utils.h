@@ -22,7 +22,9 @@
 
 	void calibrate();	                //calibration routine
 		
-	void serialCheck();               //checks serial port for commands.  Must include this in loop() for serial interface to work
+	void serialUSBCheck();            //checks serial port for commands.  Must include this in loop() for serial interface to work
+
+  void serial1Check();              //checks serial port for commands.  Must include this in loop() for serial interface to work
 
 	void parameterQuery();            //Prints current parameters
 	
@@ -65,6 +67,8 @@
   void moveRel(float pos_final,int vel_max, int accel);     // Generates trapezoidal motion profile for closed loop position mode
   
   void moveAbs(float pos_final,int vel_max, int accel);     // Generates trapezoidal motion profile for closed loop position mode
+
+  void zero();
   
 #endif
 

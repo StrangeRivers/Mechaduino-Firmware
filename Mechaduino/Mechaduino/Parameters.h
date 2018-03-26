@@ -60,6 +60,8 @@ extern const int sin_1[];
 #define dir_pin 0
 #define enable_pin 2
 
+#define limit_pin 3
+
 //for faster digitalWrite:
 #define IN_1_HIGH() (REG_PORT_OUTSET0 = PORT_PA06)
 #define IN_1_LOW() (REG_PORT_OUTCLR0 = PORT_PA06)

@@ -26,6 +26,8 @@ volatile long counter = 0;
 volatile long wrap_count = 0;  //keeps track of how many revolutions the motor has gone though (so you can command angles outside of 0-360)
 volatile float y_1 = 0;
 
+volatile float zero_angle = 0;
+
   
 volatile long step_count = 0;  //For step/dir interrupt (closed loop)
 int stepNumber = 0; // open loop step number (used by 's' and for cal routine)

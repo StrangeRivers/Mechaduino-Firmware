@@ -28,6 +28,8 @@ extern volatile long counter;
 extern volatile long wrap_count;
 extern volatile float y_1;
 
+extern volatile float zero_angle;
+
 extern volatile long step_count;  //For step/dir interrupt
 extern int stepNumber; // step index for cal routine
 

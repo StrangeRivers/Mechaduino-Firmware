@@ -1,6 +1,5 @@
 //Contains the definitions of the functions used by the firmware.
 
-
 #include <SPI.h>
 #include <Wire.h>
 
@@ -39,6 +38,10 @@ void setupPins() {
   IN_3_LOW();    //  digitalWrite(IN_3, LOW);
   IN_2_HIGH();   //  digitalWrite(IN_2, HIGH);
   IN_1_LOW();    //  digitalWrite(IN_1, LOW);
+
+  
+  pinMode(limit_pin, INPUT);
+  digitalWrite(limit_pin, HIGH);
 }
 
 void setupSPI() {
@@ -333,8 +336,22 @@ void calibrate() {   /// this is the calibration routine
 
 }
 
+void zero() {
 
-void serialCheck() {        //Monitors serial for commands.  Must be called in routinely in loop for serial interface to work.
+  while(digitalRead(limit_pin) == HIGH) {
+    r += 0.01;
+  }
+
+  zero_angle = yw;
+  SerialUSB.print("Zero Angle: ");
+  SerialUSB.println(zero_angle);
+
+  delay(100);
+  r += -1000;
+  
+}
+
+void serialUSBCheck() {        //Monitors serial for commands.  Must be called in routinely in loop for serial interface to work.
 
   if (SerialUSB.available()) {
 
@@ -428,12 +445,23 @@ void serialCheck() {        //Monitors serial for commands.  Must be called in r
         stepResponse();
         break;
 
+      case 'z':
+        zero();
+        break;
 
       default:
         break;
     }
   }
 
+}
+
+void serial1Check() {
+  if (Serial1.available()) {
+    char inChar = (char)Serial1.read();
+
+    
+  }
 }
 
 
