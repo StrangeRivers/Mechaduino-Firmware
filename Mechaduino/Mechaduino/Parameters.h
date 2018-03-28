@@ -24,7 +24,6 @@ extern volatile float vLPF;
 
 extern const float lookup[];
 
-
 extern volatile float pLPFa;
 extern volatile float pLPFb;
 extern volatile float vLPFa;

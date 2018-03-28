@@ -59,20 +59,23 @@ void setup()        // This code runs once at startup
   setupPins();                      // configure pins
   setupTCInterrupts();              // configure controller interrupt
 
+  Serial1.begin(115200);
+
   SerialUSB.begin(115200);          
   delay(3000);                      // This delay seems to make it easier to establish a connection when the Mechaduino is configured to start in closed loop mode.  
   serialMenu();                     // Prints menu to serial monitor
   setupSPI();                       // Sets up SPI for communicating with encoder
-  digitalWrite(ledPin,LOW);         // turn LED off 
   
+  digitalWrite(ledPin,LOW);         // turn LED off 
 
   // Uncomment the below lines as needed for your application.
   // Leave commented for initial calibration and tuning.
   
   //    configureStepDir();           // Configures setpoint to be controlled by step/dir interface
   //    configureEnablePin();         // Active low, for use wath RAMPS 1.4 or similar
-  //     enableTCInterrupts();         // uncomment this line to start in closed loop 
-  //    mode = 'x';                   // start in position mode
+  
+  enableTCInterrupts();         // uncomment this line to start in closed loop 
+  mode = 'x';                   // start in position mode
 
 }
   
@@ -87,8 +90,10 @@ void loop()                 // main loop
 {
 
   serialUSBCheck();              //must have this execute in loop for serial commands to function
+  if (serial1Check(S1_received_bytes)) {
+    showNewData();
+  }
 
-  //r=0.1125*step_count;      //Don't use this anymore. Step interrupts enabled above by "configureStepDir()", adjust step size ("stepangle")in parameters.cpp
 
 }
 
