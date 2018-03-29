@@ -3,12 +3,14 @@
 
 #include <SPI.h>
 #include <Wire.h>
+#include <ArduinoJson.h>
 
 #include "Parameters.h"
 #include "Controller.h"
 #include "Utils.h"
 #include "State.h"
 #include "analogFastWrite.h"
+
 
 void setupPins() {
 
@@ -1257,7 +1259,10 @@ void moveAbs(float pos_final,int vel_max, int accel){
   
 }
 
-
+void setupSerial1Interface() {
+  StaticJsonBuffer <200> json_buffer;
+  JsonObject &root = json_buffer.createObject();
+}
 
 
 

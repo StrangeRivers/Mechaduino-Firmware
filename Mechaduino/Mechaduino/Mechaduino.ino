@@ -70,8 +70,8 @@ void setup()        // This code runs once at startup
   
   //    configureStepDir();           // Configures setpoint to be controlled by step/dir interface
   //    configureEnablePin();         // Active low, for use wath RAMPS 1.4 or similar
-  //     enableTCInterrupts();         // uncomment this line to start in closed loop 
-  //    mode = 'x';                   // start in position mode
+      enableTCInterrupts();         // uncomment this line to start in closed loop 
+      mode = 'x';                   // start in position mode
 
 }
   
@@ -87,7 +87,6 @@ void loop()                 // main loop
 
   serialCheck();              //must have this execute in loop for serial commands to function
 
-  //r=0.1125*step_count;      //Don't use this anymore. Step interrupts enabled above by "configureStepDir()", adjust step size ("stepangle")in parameters.cpp
 
 }
 
