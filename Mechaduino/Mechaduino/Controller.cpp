@@ -43,7 +43,7 @@ void TC5_Handler() {                // gets called with FPID frequency
            
             break;
             
-        case 'v':         // velocity controlr
+        case 'v':         // velocity control
           v = vLPFa*v +  vLPFb*(yw-yw_1);     //filtered velocity called "DTerm" because it is similar to derivative action in position loop
 
           e = (r - v);   //error in degrees per rpm (sample frequency in Hz * (60 seconds/min) / (360 degrees/rev) )

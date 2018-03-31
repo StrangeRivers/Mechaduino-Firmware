@@ -3,26 +3,29 @@
 #include "State.h"
 #include "Serial.h"
 
-#include <SPI.h>
+#include <arduino.h>
 
-uint8_t S1_received_bytes[];
+uint8_t rx_buffer_S1[];
 uint8_t num_received = 0;
+bool rx_ack_S1 = false;
+const uint8_t start_marker = 0x3C;
+const uint8_t end_marker = 0x3E;
 
-boolean new_data = false;
+bool new_data = false;
 
 bool serial1Check(uint8_t *receive_buffer) {
   
-    static boolean receive_in_progress = false;
+    static bool receive_in_progress = false;
     static uint8_t ndx = 0;
-    
-    uint8_t start_marker = 0x3C;
-    uint8_t end_marker = 0x3E;
+
     uint8_t rb;
   
     while (Serial1.available() > 0 && new_data == false) {
-      
+
+        rx_ack_S1 = false;
         rb = Serial1.read();
-                 
+
+        //TODO: add counter to ignore partial messages
         if (receive_in_progress == true) {
           
             if (rb != end_marker) {
@@ -50,42 +53,75 @@ bool serial1Check(uint8_t *receive_buffer) {
   return new_data;
 }
 
-void showNewData() {
-    if (new_data == true) {
-        
-        //SerialUSB.print("This just in (HEX values)... ");
-        
-//        for (byte n = 0; n < num_received; n++) {
-//            SerialUSB.print(S1_received_bytes[n], HEX);
-//            SerialUSB.print(' ');
-//        }
-        SerialUSB.println();
-        new_data = false; // clear the S1 receive buffer
-    }
-}
+void parseNewData(uint8_t *receive_buffer) {
 
-void parseNewData(uint8_t *receive_buffer[]) {
+  // Current interface is a character byte followed by four bytes that make up a float - a key/value pair
+  // would be great to update this in the future to be more general and able to handle more complex messages (JSON?)
   
   if (new_data == true) {
+    uint8_t key = receive_buffer[0];
+    union {float value; uint8_t convert[4];} u;
 
-      switch (receive_buffer[0]) {
+    for (uint8_t i=1; i < num_received; i++) {
+      u.convert[i-1] = receive_buffer[i];
+    }
 
-        case 'r':
-          uint8_t temp_buffer[4];
-          
-          memcpy(temp_buffer, receive_buffer, 4);
-//          for (int i=1; i <= sizeof(receive_buffer); i++) {
-//            temp_buffer[i] = receive_buffer[i];
-//          }
+    new_data = false; // overwrite the S1 rx buffer next round
 
-          r = bytes_2_float(&temp_buffer);
-          
-        break;
-      }
+    switch ((char)key) {
+
+      case 'r': // incoming message is new setpoint
+        r = u.value;
+        SerialUSB.print("set r ");
+        SerialUSB.println(u.value, DEC);
+      break;
+
+      case 'z':
+        zero();
+        //TODO: send a zeroing status report to the controller - via heartbeat
+      break;
       
     }
+  }
 }
 
+void sendData(char key, float value, int repeat) {
+  
+  union {float float_variable; uint8_t temp_array[4];} u;
+
+  u.float_variable = value;
+
+  for (int i = 0; i < repeat; i++) {
+    Serial1.write(start_marker);
+    Serial1.write(key);
+    for (int i = 0; i<4; i++) {
+      Serial1.write(u.temp_array[i]);
+    }
+    Serial1.write(end_marker);
+  }
+  
+}
+
+void sendStateMessage() {
+  static float u_last = u;
+  static float r_last = r;
+  static float y_last = y;
+  static float v_last = v;
+  static float e_last = e;
+  static float zero_angle_last = zero_angle;
+  static char mode_last = mode;
+
+  // check if state has changed and send an update to the controller
+  // send some messages three times if they're unlikely to be updated often
+  if (u != u_last)                    sendData('u', u, 1);
+  if (r != r_last)                    sendData('r', r, 1);
+  if (y != y_last)                    sendData('y', y, 1);
+  if (v != v_last)                    sendData('v', v, 1);
+  if (e != e_last)                    sendData('e', e, 1);
+  if (zero_angle != zero_angle_last)  sendData('z', zero_angle, 3);
+  if (mode != mode_last)              sendData('m', mode, 3);
+  
+}
 
 void serialUSBCheck() {        //Monitors serial for commands.  Must be called in routinely in loop for serial interface to work.
 
@@ -191,36 +227,3 @@ void serialUSBCheck() {        //Monitors serial for commands.  Must be called i
   }
 
 }
-
-void float_2_bytes(float val, uint8_t *bytes_array){
-  
-  // Create union of shared memory space
-  union {
-    float float_variable;
-    uint8_t temp_array[4];
-  } u;
-  
-  // Overwrite bytes of union with float variable
-  u.float_variable = val;
-  
-  // Assign bytes to input array
-  memcpy(bytes_array, u.temp_array, 4);
-}
-
-float bytes_2_float(uint8_t *bytes_array){
-  
-  // Create union of shared memory space
-  union {
-    float float_variable;
-    uint8_t temp_array[4];
-  } u;
-  
-  // Overwrite bytes of union with float variable
-  memcpy(u.temp_array, bytes_array, 4);
-  
-  // Assign bytes to input array
-  return u.float_variable;
-  
-}
-
-

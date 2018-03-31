@@ -596,7 +596,7 @@ void setupTCInterrupts() {  // configure the controller interrupt
   TC5->COUNT16.CTRLA.reg |= TC_CTRLA_WAVEGEN_MFRQ; // Set TC as normal Normal Frq
   WAIT_TC16_REGS_SYNC(TC5)
 
-  TC5->COUNT16.CTRLA.reg |= TC_CTRLA_PRESCALER_DIV1;   // Set perscaler
+  TC5->COUNT16.CTRLA.reg |= TC_CTRLA_PRESCALER_DIV1;   // Set prescaler
   WAIT_TC16_REGS_SYNC(TC5)
 
   TC5->COUNT16.CC[0].reg = (int)( round(48000000 / Fs)); //0x3E72; //0x4AF0;
@@ -611,9 +611,6 @@ void setupTCInterrupts() {  // configure the controller interrupt
   // Enable InterruptVector
   NVIC_EnableIRQ(TC5_IRQn);
 
-  // Enable TC
-  //  TC5->COUNT16.CTRLA.reg |= TC_CTRLA_ENABLE;
-  //  WAIT_TC16_REGS_SYNC(TC5)
 }
 
 void enableTCInterrupts() {   //enables the controller interrupt ("closed loop mode")

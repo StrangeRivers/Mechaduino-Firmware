@@ -90,8 +90,8 @@ void loop()                 // main loop
 {
 
   serialUSBCheck();              //must have this execute in loop for serial commands to function
-  if (serial1Check(S1_received_bytes)) {
-    showNewData();
+  if (serial1Check(rx_buffer_S1)) {
+    parseNewData(rx_buffer_S1);
   }
 
 
